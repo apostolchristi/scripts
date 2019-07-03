@@ -1,0 +1,40 @@
+node{
+    stage('SCM Checkout') {
+        git branch: 'docker-compose', url: 'https://github.com/lucky4ever4/SpringBoot_DockerCompose'
+    }
+
+    stage('MVN Compile Package') {
+        def mvnHome = tool name: 'maven-3', type: 'maven'
+        sh label: '', script: "${mvnHome}/bin/mvn clean install"
+    }
+
+    stage('Build Docker Image') {
+        sh 'docker build -t capostol93/users-mysql .'
+    }
+
+    stage('Push Docker Image') {
+        sh 'docker tag users-mysql capostol93/users-mysql'
+        withCredentials([string(credentialsId: 'docker-pwd', variable: 'dockerHubPwd')]) {
+            sh "docker login -u capostol93 -p ${dockerHubPwd}"
+        }
+        sh 'docker push capostol93/users-mysql'
+    }
+
+ stage('Run Container on Dev Server') {
+        def mkdir = 'mkdir /home/capostol/TestDir'
+        def dockerRun = 'docker run -p 8080:8080 -d --name my-app capostol93/users-mysql'
+        def dockerPull = 'docker pull capostol93/users-mysql'
+        def dockerComposeRun = 'docker-compose up'
+
+        sh "${dockerPull}"
+        sh "${dockerComposeRun}"
+
+
+
+    }
+
+
+
+
+
+}

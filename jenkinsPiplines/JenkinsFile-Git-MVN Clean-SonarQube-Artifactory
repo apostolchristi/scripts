@@ -1,0 +1,52 @@
+node{
+
+    def server = Artifactory.server 'artifactory-6'
+    def rtMaven = Artifactory.newMavenBuild()
+    def buildInfo
+
+    stage('Git Pull') {
+        git branch: 'capostol-CI', url: 'https://github.com/takeyourseat/takeyourseatapi'
+    }
+
+      stage ('Artifactory configuration') {
+        rtMaven.tool = 'maven-3' // Tool name from Jenkins configuration
+        rtMaven.deployer releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local', server: server
+        buildInfo = Artifactory.newBuildInfo()
+        buildInfo.env.capture = true
+        // rtMaven.deployer.deployArtifacts = true
+    }
+
+    stage('MVN Install ') {
+    rtMaven.run pom: '.' , goals: 'clean install -U', buildInfo: buildInfo
+    }
+
+    stage('Sonar-scanner') {
+      def mvnHome = tool name: 'maven-3', type: 'maven'
+      withSonarQubeEnv('sonar-6') {
+        sh "${mvnHome}/bin/mvn sonar:sonar"
+      }
+    }
+
+     stage ('Publish build info') {
+        server.publishBuildInfo buildInfo
+        // rtMaven.deployer.deployArtifacts buildInfo
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
