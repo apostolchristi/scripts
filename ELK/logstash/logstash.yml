@@ -1,3 +1,6 @@
+# This file is configured for production server with basics configurations.
+#This file will not work anymore with localhost, but instead will be available on public ip.
+
 # Settings file in YAML
 #
 # Settings can be specified either in hierarchical form, e.g.:
@@ -25,7 +28,7 @@
 # Which directory should be used by logstash and its plugins
 # for any persistent needs. Defaults to LOGSTASH_HOME/data
 #
-# path.data:
+path.data: /var/lib/logstash
 #
 # ------------ Pipeline Settings --------------
 #
@@ -74,7 +77,7 @@
 # Periodically check if the configuration has changed and reload the pipeline
 # This can also be triggered manually through the SIGHUP signal
 #
-# config.reload.automatic: false
+config.reload.automatic: true
 #
 # How often to check if the pipeline configuration has changed (in seconds)
 #
@@ -187,7 +190,7 @@
 #
 # Bind address for the metrics REST endpoint
 #
-# http.host: "127.0.0.1"
+http.host: "167.71.46.25"
 #
 # Bind port for the metrics REST endpoint, this option also accept a range
 # (9600-9700) and logstash will pick up the first available ports.
@@ -204,8 +207,8 @@
 #   * debug
 #   * trace
 #
-# log.level: info
-# path.logs:
+log.level: info
+path.logs: /var/log/logstash
 #
 # ------------ Other Settings --------------
 #
